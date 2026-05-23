@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE = 1
+export CI = 1
+export NEXT_TELEMETRY_DISABLED = 1
+
+NODE_VERSION ?= 24.15.0
+NODE_ARCH ?= x64
+NODE_PLATFORM ?= linux
+NODE_DIST := node-v$(NODE_VERSION)-$(NODE_PLATFORM)-$(NODE_ARCH)
+NODE_TARBALL := $(NODE_DIST).tar.xz
+NODE_URL := https://nodejs.org/dist/v$(NODE_VERSION)/$(NODE_TARBALL)
+NODE_STAGE := debian/.bundled-node
+NODE_EXTRACTED := $(NODE_STAGE)/$(NODE_DIST)
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	mkdir -p "$(NODE_STAGE)"
+	if [ ! -d "$(NODE_EXTRACTED)" ]; then \
+	  echo "Fetching Node $(NODE_VERSION) from $(NODE_URL)"; \
+	  curl -fsSL "$(NODE_URL)" -o "$(NODE_STAGE)/$(NODE_TARBALL)"; \
+	  tar -C "$(NODE_STAGE)" -xJf "$(NODE_STAGE)/$(NODE_TARBALL)"; \
+	fi
+	PATH="$(CURDIR)/$(NODE_EXTRACTED)/bin:$$PATH" corepack enable
+	PATH="$(CURDIR)/$(NODE_EXTRACTED)/bin:$$PATH" corepack prepare pnpm@9.15.4 --activate
+	PATH="$(CURDIR)/$(NODE_EXTRACTED)/bin:$$PATH" pnpm install --frozen-lockfile --prod=false
+	PATH="$(CURDIR)/$(NODE_EXTRACTED)/bin:$$PATH" pnpm build
+
+override_dh_auto_install:
+	mkdir -p debian/mission-control/usr/lib/mission-control
+	cp -a .next/standalone/. debian/mission-control/usr/lib/mission-control/
+	mkdir -p debian/mission-control/usr/lib/mission-control/.next
+	cp -a .next/static debian/mission-control/usr/lib/mission-control/.next/
+	cp -a public debian/mission-control/usr/lib/mission-control/
+	mkdir -p debian/mission-control/usr/lib/mission-control/node
+	cp -a "$(NODE_EXTRACTED)"/. debian/mission-control/usr/lib/mission-control/node/

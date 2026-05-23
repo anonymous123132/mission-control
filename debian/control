@@ -1,0 +1,22 @@
+Source: mission-control
+Section: web
+Priority: optional
+Maintainer: Mission Control Maintainers <maintainers@example.invalid>
+Build-Depends:
+ debhelper-compat (= 13),
+ git,
+ python3,
+ make,
+ g++,
+ ca-certificates,
+ curl,
+ xz-utils
+Standards-Version: 4.6.2
+Homepage: https://github.com/builderz-labs/mission-control
+
+Package: mission-control
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Open-source agent orchestration dashboard
+ Mission Control is a self-hosted dashboard for AI agent orchestration.
+ It runs as a local web server and stores state in a SQLite database.

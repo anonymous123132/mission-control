@@ -1,0 +1,5 @@
+mission-control (2.0.1) unstable; urgency=medium
+
+  * Initial Debian packaging for standalone installs.
+
+ -- Codex <codex@example.invalid>  Sat, 23 May 2026 09:25:00 +0000

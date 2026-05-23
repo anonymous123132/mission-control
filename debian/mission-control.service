@@ -1,0 +1,16 @@
+[Unit]
+Description=Mission Control
+After=network.target
+
+[Service]
+Type=simple
+User=mission-control
+Group=mission-control
+WorkingDirectory=/usr/lib/mission-control
+EnvironmentFile=-/etc/mission-control/config.env
+ExecStart=/usr/lib/mission-control/node/bin/node /usr/lib/mission-control/server.js
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -38,6 +38,9 @@ playwright-report/
 .tmp/
 .playwright-mcp/
 
+# Debian packaging build cache
+debian/.bundled-node/
+
 # Local QA screenshots
 /e2e-debug-*.png
 /e2e-channels-*.png
