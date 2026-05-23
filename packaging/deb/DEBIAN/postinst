@@ -5,14 +5,13 @@ set -e
 
 case "$1" in
   configure)
-    if ! command -v node >/dev/null 2>&1; then
-      echo "Mission Control requires Node.js 22+ (node command not found)." >&2
-      exit 1
-    fi
-    NODE_MAJOR="$(node -p 'process.versions.node.split(\".\")[0]' 2>/dev/null || echo 0)"
-    if [ "$NODE_MAJOR" -lt 22 ]; then
-      echo "Mission Control requires Node.js 22+ (found $(node -v 2>/dev/null || echo unknown))." >&2
-      exit 1
+    NODE_BIN="$(command -v node || true)"
+    NODE_OK=0
+    if [ -n "$NODE_BIN" ]; then
+      NODE_MAJOR="$("$NODE_BIN" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
+      if [ "$NODE_MAJOR" -ge 22 ]; then
+        NODE_OK=1
+      fi
     fi
 
     db_get mission-control/port || true
@@ -39,6 +38,11 @@ PORT=$PORT
 HOSTNAME=0.0.0.0
 MISSION_CONTROL_DATA_DIR=/var/lib/mission-control
 EOCONF
+
+    if [ "$NODE_OK" -ne 1 ]; then
+      echo "Warning: Node.js 22+ was not detected in PATH. Install Node.js 22+ and restart mission-control.service manually."
+      exit 0
+    fi
 
     if command -v systemctl >/dev/null 2>&1; then
       systemctl daemon-reload || true
