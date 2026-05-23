@@ -1,0 +1,5 @@
+Template: mission-control/port
+Type: string
+Default: 3000
+Description: Port for Mission Control web server
+ Select the TCP port Mission Control should listen on.

@@ -1,0 +1,53 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+case "$1" in
+  configure)
+    if ! command -v node >/dev/null 2>&1; then
+      echo "Mission Control requires Node.js 22+ (node command not found)." >&2
+      exit 1
+    fi
+    NODE_MAJOR="$(node -p 'process.versions.node.split(\".\")[0]' 2>/dev/null || echo 0)"
+    if [ "$NODE_MAJOR" -lt 22 ]; then
+      echo "Mission Control requires Node.js 22+ (found $(node -v 2>/dev/null || echo unknown))." >&2
+      exit 1
+    fi
+
+    db_get mission-control/port || true
+    PORT="${RET:-3000}"
+    case "$PORT" in
+      ''|*[!0-9]*) PORT=3000 ;;
+    esac
+    if [ "$PORT" -lt 1 ] || [ "$PORT" -gt 65535 ]; then
+      PORT=3000
+    fi
+
+    if ! getent group mission-control >/dev/null 2>&1; then
+      addgroup --system mission-control
+    fi
+    if ! getent passwd mission-control >/dev/null 2>&1; then
+      adduser --system --ingroup mission-control --home /var/lib/mission-control --no-create-home --shell /usr/sbin/nologin mission-control
+    fi
+
+    mkdir -p /var/lib/mission-control /var/log/mission-control /etc/mission-control
+    chown -R mission-control:mission-control /var/lib/mission-control /var/log/mission-control /etc/mission-control
+
+    cat > /etc/default/mission-control <<EOCONF
+PORT=$PORT
+HOSTNAME=0.0.0.0
+MISSION_CONTROL_DATA_DIR=/var/lib/mission-control
+EOCONF
+
+    if command -v systemctl >/dev/null 2>&1; then
+      systemctl daemon-reload || true
+      systemctl enable mission-control.service || true
+      systemctl restart mission-control.service || systemctl start mission-control.service || true
+    fi
+
+    echo "Mission Control configured to run on port $PORT"
+    ;;
+esac
+
+exit 0

@@ -90,6 +90,17 @@ pnpm dev                    # http://localhost:3000/setup
 docker compose up           # auto-generates credentials, persists across restarts
 ```
 
+### Debian Package (.deb)
+
+```bash
+pnpm install
+pnpm build:deb
+sudo apt install ./dist/mission-control_<version>_<arch>.deb
+```
+
+The installer asks which port to use (default `3000`), writes it to `/etc/default/mission-control`, and starts `mission-control.service`.
+Open `http://localhost:<port>/setup` after install.
+
 ### Prebuilt Images
 
 The project publishes multi-arch images to GHCR on main and version tags.
@@ -178,6 +189,7 @@ For the full walkthrough, see the **[Quickstart Guide](docs/quickstart.md)**.
 | [CLI Reference](docs/cli-agent-control.md) | Full CLI command list for headless/scripted usage |
 | [CLI Integration](docs/cli-integration.md) | Connect Claude Code, Codex, or any CLI tool directly |
 | [Deployment](docs/deployment.md) | Production deployment, reverse proxy, VPS setup |
+| [Debian Package](docs/debian-package.md) | Build and install Mission Control as a `.deb` with systemd |
 | [Security Hardening](docs/SECURITY-HARDENING.md) | Docker hardening, CSP, network isolation |
 | [Release Process](RELEASE.md) | SemVer policy, branch strategy, tag/release checklist |
 | [API Reference](openapi.json) | OpenAPI 3.1 spec — 101 REST endpoints with Scalar UI at `/api-docs` |

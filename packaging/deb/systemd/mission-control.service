@@ -1,0 +1,20 @@
+[Unit]
+Description=Mission Control dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=mission-control
+Group=mission-control
+WorkingDirectory=/opt/mission-control
+EnvironmentFile=-/etc/default/mission-control
+Environment=NODE_ENV=production
+Environment=MISSION_CONTROL_DATA_DIR=/var/lib/mission-control
+ExecStart=/usr/bin/env node /opt/mission-control/server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

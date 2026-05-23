@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+db_input high mission-control/port || true
+db_go || true
+
+exit 0
