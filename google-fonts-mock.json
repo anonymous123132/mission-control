@@ -1,0 +1,4 @@
+{
+  "https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap": "@font-face { font-family: 'Inter'; src: local('Arial'); font-display: swap; }",
+  "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap": "@font-face { font-family: 'JetBrains Mono'; src: local('Courier New'); font-display: swap; }"
+}
